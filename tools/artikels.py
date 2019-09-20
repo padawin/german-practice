@@ -1,27 +1,41 @@
 #!/bin/python3
 
 import random
+import sys
 import time
 
 
 GENDERS = ("Masculine", "Feminine", "Neutral", "Plural")
 ROLES = ("Nominative", "Accusative", "Dative", "Genitive")
-RESPONSES = [
+ARTICLES_RESPONSES = [
     ["der",      "die", "das",      "die"],
     ["den",      "die", "das",      "die"],
     ["dem",      "der", "dem",      "den ...n"],
     ["des ...s", "der", "des ...s", "der"]
 ]
 
+def play(name):
+    try:
+        game = {
+            "articles": play_articles,
+        }[name]
+    except KeyError:
+        print("Invalid game")
+        return
+    try:
+        game()
+    except KeyboardInterrupt:
+        return
 
-def run():
+
+def play_articles():
     while True:
         genderIndex = random.randint(0, len(GENDERS) - 1)
         roleIndex = random.randint(0, len(ROLES) - 1)
         gender = GENDERS[genderIndex]
         role = ROLES[roleIndex]
         res = input("Article for {} {}: ".format(role, gender)).lower()
-        expectedResponse = RESPONSES[roleIndex][genderIndex]
+        expectedResponse = ARTICLES_RESPONSES[roleIndex][genderIndex]
         if res == expectedResponse:
             print("\033[32mCorrect!\033[0m")
         else:
@@ -31,7 +45,5 @@ def run():
 
 
 if __name__ == "__main__":
-    try:
-        run()
-    except KeyboardInterrupt:
-        pass
+    if len(sys.argv) == 2:
+        play(sys.argv[1])
