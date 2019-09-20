@@ -6,7 +6,12 @@ import time
 
 
 GENDERS = ("Masculine", "Feminine", "Neutral", "Plural")
-ROLES = ("Nominative", "Accusative", "Dative", "Genitive")
+ROLES = (
+    ("Sujet", "Nominatif"),
+    ("COD", "Accusatif"),
+    ("COI", "Datif"),
+    ("Possessif", "Genitif"),
+)
 ARTICLES_RESPONSES = [
     ["der",      "die", "das",      "die"],
     ["den",      "die", "das",      "die"],
@@ -18,6 +23,7 @@ def play(name):
     try:
         game = {
             "articles": play_articles,
+            "roles": play_roles,
         }[name]
     except KeyError:
         print("Invalid game")
@@ -33,7 +39,7 @@ def play_articles():
         genderIndex = random.randint(0, len(GENDERS) - 1)
         roleIndex = random.randint(0, len(ROLES) - 1)
         gender = GENDERS[genderIndex]
-        role = ROLES[roleIndex]
+        role = ROLES[roleIndex][1]
         res = input("Article for {} {}: ".format(role, gender)).lower()
         expectedResponse = ARTICLES_RESPONSES[roleIndex][genderIndex]
         if res == expectedResponse:
@@ -41,6 +47,25 @@ def play_articles():
         else:
             msg = "\033[31mIncorrect! The correct response was: {}\033[0m"
             print(msg.format(expectedResponse))
+            time.sleep(2)
+
+
+def play_roles():
+    while True:
+        way = random.randint(0, 1)
+        roleIndex = random.randint(0, len(ROLES) - 1)
+        if way == 0:
+            prompt = "Role name for \033[36m{}\033[0m? "
+            expected = ROLES[roleIndex][1]
+        else:
+            prompt = "Function of role \033[36m{}\033[0m? "
+            expected = ROLES[roleIndex][0]
+        res = input(prompt.format(ROLES[roleIndex][way])).lower()
+        if res == expected.lower():
+            print("\033[32mCorrect!\033[0m")
+        else:
+            msg = "\033[31mIncorrect! The correct response was: {}\033[0m"
+            print(msg.format(expected))
             time.sleep(2)
 
 
