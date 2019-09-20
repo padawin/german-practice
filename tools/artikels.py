@@ -47,3 +47,9 @@ def play_articles():
 if __name__ == "__main__":
     if len(sys.argv) == 2:
         play(sys.argv[1])
+    else:
+        print("           male     female  neutral  Plural")
+        print("Nominative \033[32mder\033[0m      \033[34mdie\033[0m     das      \033[33mdie\033[0m")
+        print("Accusative \033[32mden\033[0m      \033[34mdie\033[0m     das      \033[33mdie\033[0m")
+        print("Dative     \033[32mdem\033[0m      \033[34mder\033[0m     dem      \033[33mden ...n\033[0m")
+        print("Genitive   \033[32mdes ...s\033[0m \033[34mder\033[0m     des ...s \033[33mder\033[0m")
