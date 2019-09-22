@@ -19,6 +19,14 @@ ARTICLES_RESPONSES = [
     ["des ...s", "der", "des ...s", "der"]
 ]
 
+# Colors
+R = "\033[31m"
+G = "\033[32m"
+B = "\033[34m"
+Y = "\033[33m"
+Z = "\033[0m"
+
+
 def play(name):
     try:
         game = {
@@ -41,12 +49,12 @@ def play_articles():
         gender = GENDERS[genderIndex]
         case = CASES[caseIndex][1]
         res = input("Article for {} {}: ".format(case, gender)).lower()
-        expectedResponse = ARTICLES_RESPONSES[caseIndex][genderIndex]
-        if res == expectedResponse:
-            print("\033[32mCorrect!\033[0m")
+        expected = ARTICLES_RESPONSES[caseIndex][genderIndex]
+        if res == expected:
+            print(f"{G}Correct!{Z}")
         else:
-            msg = "\033[31mIncorrect! The correct response was: {}\033[0m"
-            print(msg.format(expectedResponse))
+            msg = f"{R}Incorrect! The correct response was: {expected}{Z}"
+            print(msg)
             time.sleep(2)
 
 
@@ -55,17 +63,17 @@ def play_cases():
         way = random.randint(0, 1)
         caseIndex = random.randint(0, len(CASES) - 1)
         if way == 0:
-            prompt = "Case name for \033[36m{}\033[0m? "
             expected = CASES[caseIndex][1]
+            prompt = f"Case name for \033[36m{expected}{Z}? "
         else:
-            prompt = "Function of case \033[36m{}\033[0m? "
             expected = CASES[caseIndex][0]
+            prompt = f"Function of case \033[36m{expected}{Z}? "
         res = input(prompt.format(CASES[caseIndex][way])).lower()
         if res == expected.lower():
-            print("\033[32mCorrect!\033[0m")
+            print(f"{G}Correct!{Z}")
         else:
-            msg = "\033[31mIncorrect! The correct response was: {}\033[0m"
-            print(msg.format(expected))
+            msg = f"{R}Incorrect! The correct response was: {expected}{Z}"
+            print(msg)
             time.sleep(2)
 
 
@@ -74,7 +82,7 @@ if __name__ == "__main__":
         play(sys.argv[1])
     else:
         print("           male     female  neutral  Plural")
-        print("Nominative \033[32mder\033[0m      \033[34mdie\033[0m     das      \033[33mdie\033[0m")
-        print("Accusative \033[32mden\033[0m      \033[34mdie\033[0m     das      \033[33mdie\033[0m")
-        print("Dative     \033[32mdem\033[0m      \033[34mder\033[0m     dem      \033[33mden ...n\033[0m")
-        print("Genitive   \033[32mdes ...s\033[0m \033[34mder\033[0m     des ...s \033[33mder\033[0m")
+        print(f"Nominative d{G}er{Z}      d{B}ie{Z}     das      d{Y}ie{Z}")
+        print(f"Accusative d{G}en{Z}      d{B}ie{Z}     das      d{Y}ie{Z}")
+        print(f"Dative     d{G}em{Z}      d{B}er{Z}     dem      d{Y}en ...n{Z}")
+        print(f"Genitive   d{G}es ...s{Z} d{B}er{Z}     des ...s d{Y}er{Z}")
