@@ -40,14 +40,21 @@ Y = "\033[33m"
 Z = "\033[0m"
 
 
-def play(name):
+def play(name, n):
     try:
         game = GAMES[name][0]
     except KeyError:
         print("Invalid game")
         return
     try:
-        game()
+        if GAMES[name][2]:
+            n = int(n)
+            game(n)
+        else:
+            game()
+    except ValueError:
+        print("Invalid number of iterations")
+        return
     except KeyboardInterrupt:
         return
 
@@ -75,8 +82,8 @@ def table_articles():
     print(f"Genitive   {G}keines ...s{Z} {B}keiner{Z}     keines ...s {Y}keiner{Z}")
 
 
-def play_articles():
-    while True:
+def play_articles(n):
+    while n:
         articleTypeIndex = random.randint(0, len(RESPONSES) - 1)
         genderIndex = random.randint(0, len(GENDERS) - 1)
         caseIndex = random.randint(0, len(CASES) - 1)
@@ -88,13 +95,14 @@ def play_articles():
         expected = RESPONSES[articleType][caseIndex][genderIndex]
         if res == expected:
             print(f"{G}Correct!{Z}")
+            n -= 1
         else:
             msg = f"{R}Incorrect! The correct response was: {expected}{Z}"
             print(msg)
 
 
-def play_cases():
-    while True:
+def play_cases(n):
+    while n:
         way = random.randint(0, 1)
         caseIndex = random.randint(0, len(CASES) - 1)
         if way == 0:
@@ -106,23 +114,29 @@ def play_cases():
         res = input(prompt.format(CASES[caseIndex][way])).lower()
         if res == expected.lower():
             print(f"{G}Correct!{Z}")
+            n -= 1
         else:
             msg = f"{R}Incorrect! The correct response was: {expected}{Z}"
             print(msg)
 
 
 GAMES = {
-    "table": (table_articles, "Learn the articles table"),
-    "articles": (play_articles, "Practice with articles"),
-    "cases": (play_cases, "Learn which case represent which function (in french for now)"),
+    "table": (table_articles, "Learn the articles table", False),
+    "articles": (play_articles, "Practice with articles", True),
+    "cases": (play_cases, "Learn which case represent which function (in french for now)", True),
 }
 
 
 if __name__ == "__main__":
     if len(sys.argv) == 2:
-        play(sys.argv[1])
+        play(sys.argv[1], 1)
+    elif len(sys.argv) == 3:
+        play(sys.argv[1], sys.argv[2])
     else:
         print("Usage:")
         for game_name, value in GAMES.items():
-            print("{} {}".format(sys.argv[0], game_name))
+            extra = ""
+            if value[2]:  # The mode can be repeated
+                extra = "number"
+            print("{} {} {}".format(sys.argv[0], game_name, extra))
             print("\t{}".format(value[1]))
