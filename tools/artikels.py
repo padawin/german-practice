@@ -43,10 +43,7 @@ Z = "\033[0m"
 
 def play(name):
     try:
-        game = {
-            "articles": play_articles,
-            "cases": play_cases,
-        }[name]
+        game = GAMES[name][0]
     except KeyError:
         print("Invalid game")
         return
@@ -54,6 +51,29 @@ def play(name):
         game()
     except KeyboardInterrupt:
         return
+
+
+def table_articles():
+    print("Definite")
+    print("           male     female  neutral  Plural")
+    print(f"Nominative d{G}er{Z}      d{B}ie{Z}     das      d{Y}ie{Z}")
+    print(f"Accusative d{G}en{Z}      d{B}ie{Z}     das      d{Y}ie{Z}")
+    print(f"Dative     d{G}em{Z}      d{B}er{Z}     dem      d{Y}en ...n{Z}")
+    print(f"Genitive   d{G}es ...s{Z} d{B}er{Z}     des ...s d{Y}er{Z}")
+    print("")
+    print("Indefinite")
+    print("           male     female  neutral  Plural")
+    print(f"Nominative ein{G}{Z}        ein{B}e{Z}      ein        {Y}-{Z}")
+    print(f"Accusative ein{G}en{Z}      ein{B}e{Z}      ein        {Y}-{Z}")
+    print(f"Dative     ein{G}em{Z}      ein{B}er{Z}     einem      {Y}...n{Z}")
+    print(f"Genitive   ein{G}es ...s{Z} ein{B}er{Z}     eines ...s {Y}-{Z}")
+    print("")
+    print("Indefinite none")
+    print("           male     female  neutral  Plural")
+    print(f"Nominative {G}kein{Z}        {B}keine{Z}      kein        {Y}keine{Z}")
+    print(f"Accusative {G}keinen{Z}      {B}keine{Z}      kein        {Y}keine{Z}")
+    print(f"Dative     {G}keinem{Z}      {B}keiner{Z}     keinem      {Y}keinen ...n{Z}")
+    print(f"Genitive   {G}keines ...s{Z} {B}keiner{Z}     keines ...s {Y}keiner{Z}")
 
 
 def play_articles():
@@ -94,27 +114,18 @@ def play_cases():
             time.sleep(2)
 
 
+GAMES = {
+    "table": (table_articles, "Learn the articles table"),
+    "articles": (play_articles, "Practice with articles"),
+    "cases": (play_cases, "Learn which case represent which function (in french for now)"),
+}
+
+
 if __name__ == "__main__":
     if len(sys.argv) == 2:
         play(sys.argv[1])
     else:
-        print("Definite")
-        print("           male     female  neutral  Plural")
-        print(f"Nominative d{G}er{Z}      d{B}ie{Z}     das      d{Y}ie{Z}")
-        print(f"Accusative d{G}en{Z}      d{B}ie{Z}     das      d{Y}ie{Z}")
-        print(f"Dative     d{G}em{Z}      d{B}er{Z}     dem      d{Y}en ...n{Z}")
-        print(f"Genitive   d{G}es ...s{Z} d{B}er{Z}     des ...s d{Y}er{Z}")
-        print("")
-        print("Indefinite")
-        print("           male     female  neutral  Plural")
-        print(f"Nominative ein{G}{Z}        ein{B}e{Z}      ein        {Y}-{Z}")
-        print(f"Accusative ein{G}en{Z}      ein{B}e{Z}      ein        {Y}-{Z}")
-        print(f"Dative     ein{G}em{Z}      ein{B}er{Z}     einem      {Y}...n{Z}")
-        print(f"Genitive   ein{G}es ...s{Z} ein{B}er{Z}     eines ...s {Y}-{Z}")
-        print("")
-        print("Indefinite none")
-        print("           male     female  neutral  Plural")
-        print(f"Nominative {G}kein{Z}        {B}keine{Z}      kein        {Y}keine{Z}")
-        print(f"Accusative {G}keinen{Z}      {B}keine{Z}      kein        {Y}keine{Z}")
-        print(f"Dative     {G}keinem{Z}      {B}keiner{Z}     keinem      {Y}keinen ...n{Z}")
-        print(f"Genitive   {G}keines ...s{Z} {B}keiner{Z}     keines ...s {Y}keiner{Z}")
+        print("Usage:")
+        for game_name, value in GAMES.items():
+            print("{} {}".format(sys.argv[0], game_name))
+            print("\t{}".format(value[1]))
