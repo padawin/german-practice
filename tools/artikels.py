@@ -13,19 +13,19 @@ CASES = (
     ("Possessif", "Genitif"),
 )
 RESPONSES = {
-    "DEFINITE": [
+    "Definite": [
         ["der",      "die", "das",      "die"],
         ["den",      "die", "das",      "die"],
         ["dem",      "der", "dem",      "den ...n"],
         ["des ...s", "der", "des ...s", "der"]
     ],
-    "INDEFINITE": [
+    "Indefinite": [
         ["ein",        "eine",  "ein",        ""],
         ["einen",      "eine",  "ein",        ""],
         ["einem",      "einer", "einem",      "...n"],
         ["eines ...s", "einer", "eines ...s", ""]
     ],
-    "INDEFINITE_NONE": [
+    "Indefinite (none)": [
         ["kein",        "keine",  "kein",        "keine"],
         ["keinen",      "keine",  "kein",        "keine"],
         ["keinem",      "keiner", "keinem",      "keinen ...n"],
@@ -58,12 +58,15 @@ def play(name):
 
 def play_articles():
     while True:
+        articleTypeIndex = random.randint(0, len(RESPONSES) - 1)
         genderIndex = random.randint(0, len(GENDERS) - 1)
         caseIndex = random.randint(0, len(CASES) - 1)
+        articleType = list(RESPONSES.keys())[articleTypeIndex]
         gender = GENDERS[genderIndex]
         case = CASES[caseIndex][1]
-        res = input("Article for {} {}: ".format(case, gender)).lower()
-        expected = RESPONSES["DEFINITE"][caseIndex][genderIndex]
+        prompt = "{} article for {} {}: ".format(articleType, case, gender)
+        res = input(prompt).lower()
+        expected = RESPONSES[articleType][caseIndex][genderIndex]
         if res == expected:
             print(f"{G}Correct!{Z}")
         else:
