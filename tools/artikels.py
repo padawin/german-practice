@@ -2,7 +2,6 @@
 
 import random
 import sys
-import time
 
 
 GENDERS = ("Masculine", "Feminine", "Neutral", "Plural")
@@ -92,7 +91,6 @@ def play_articles():
         else:
             msg = f"{R}Incorrect! The correct response was: {expected}{Z}"
             print(msg)
-            time.sleep(2)
 
 
 def play_cases():
@@ -111,7 +109,6 @@ def play_cases():
         else:
             msg = f"{R}Incorrect! The correct response was: {expected}{Z}"
             print(msg)
-            time.sleep(2)
 
 
 GAMES = {
