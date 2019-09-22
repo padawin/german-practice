@@ -6,7 +6,7 @@ import time
 
 
 GENDERS = ("Masculine", "Feminine", "Neutral", "Plural")
-ROLES = (
+CASES = (
     ("Sujet", "Nominatif"),
     ("COD", "Accusatif"),
     ("COI", "Datif"),
@@ -23,7 +23,7 @@ def play(name):
     try:
         game = {
             "articles": play_articles,
-            "roles": play_roles,
+            "cases": play_cases,
         }[name]
     except KeyError:
         print("Invalid game")
@@ -37,11 +37,11 @@ def play(name):
 def play_articles():
     while True:
         genderIndex = random.randint(0, len(GENDERS) - 1)
-        roleIndex = random.randint(0, len(ROLES) - 1)
+        caseIndex = random.randint(0, len(CASES) - 1)
         gender = GENDERS[genderIndex]
-        role = ROLES[roleIndex][1]
-        res = input("Article for {} {}: ".format(role, gender)).lower()
-        expectedResponse = ARTICLES_RESPONSES[roleIndex][genderIndex]
+        case = CASES[caseIndex][1]
+        res = input("Article for {} {}: ".format(case, gender)).lower()
+        expectedResponse = ARTICLES_RESPONSES[caseIndex][genderIndex]
         if res == expectedResponse:
             print("\033[32mCorrect!\033[0m")
         else:
@@ -50,17 +50,17 @@ def play_articles():
             time.sleep(2)
 
 
-def play_roles():
+def play_cases():
     while True:
         way = random.randint(0, 1)
-        roleIndex = random.randint(0, len(ROLES) - 1)
+        caseIndex = random.randint(0, len(CASES) - 1)
         if way == 0:
-            prompt = "Role name for \033[36m{}\033[0m? "
-            expected = ROLES[roleIndex][1]
+            prompt = "Case name for \033[36m{}\033[0m? "
+            expected = CASES[caseIndex][1]
         else:
-            prompt = "Function of role \033[36m{}\033[0m? "
-            expected = ROLES[roleIndex][0]
-        res = input(prompt.format(ROLES[roleIndex][way])).lower()
+            prompt = "Function of case \033[36m{}\033[0m? "
+            expected = CASES[caseIndex][0]
+        res = input(prompt.format(CASES[caseIndex][way])).lower()
         if res == expected.lower():
             print("\033[32mCorrect!\033[0m")
         else:
