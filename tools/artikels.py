@@ -40,15 +40,27 @@ Y = "\033[33m"
 Z = "\033[0m"
 
 
+def pick_name():
+    interactive_games = [
+        game_name
+        for game_name, settings in GAMES.items()
+        if settings["interactive"]
+    ]
+    name = interactive_games[random.randint(0, len(interactive_games) - 1)]
+    return name
+
+
 def get_game(name):
+    if name == "random":
+        name = pick_name()
     return GAMES[name]["cb"]
 
 
 def play(name, n):
     try:
-        game = get_game(name)
         n = int(n)
         while n:
+            game = get_game(name)
             res = game()
             if res:
                 n -= 1
