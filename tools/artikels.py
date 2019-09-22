@@ -42,12 +42,12 @@ Z = "\033[0m"
 
 def play(name, n):
     try:
-        game = GAMES[name][0]
+        game = GAMES[name]["cb"]
     except KeyError:
         print("Invalid game")
         return
     try:
-        if GAMES[name][2]:
+        if GAMES[name]["interactive"]:
             n = int(n)
             game(n)
         else:
@@ -121,9 +121,21 @@ def play_cases(n):
 
 
 GAMES = {
-    "table": (table_articles, "Learn the articles table", False),
-    "articles": (play_articles, "Practice with articles", True),
-    "cases": (play_cases, "Learn which case represent which function (in french for now)", True),
+    "table": {
+        "cb": table_articles,
+        "help": "Learn the articles table",
+        "interactive": False
+    },
+    "articles": {
+        "cb": play_articles,
+        "help": "Practice with articles",
+        "interactive": True
+    },
+    "cases": {
+        "cb": play_cases,
+        "help": "Learn which case represent which function (in french for now)",
+        "interactive": True
+    },
 }
 
 
@@ -136,7 +148,7 @@ if __name__ == "__main__":
         print("Usage:")
         for game_name, value in GAMES.items():
             extra = ""
-            if value[2]:  # The mode can be repeated
+            if value["interactive"]:  # The mode can be repeated
                 extra = "number"
             print("{} {} {}".format(sys.argv[0], game_name, extra))
-            print("\t{}".format(value[1]))
+            print("\t{}".format(value["help"]))
