@@ -12,12 +12,26 @@ CASES = (
     ("COI", "Datif"),
     ("Possessif", "Genitif"),
 )
-ARTICLES_RESPONSES = [
-    ["der",      "die", "das",      "die"],
-    ["den",      "die", "das",      "die"],
-    ["dem",      "der", "dem",      "den ...n"],
-    ["des ...s", "der", "des ...s", "der"]
-]
+RESPONSES = {
+    "DEFINITE": [
+        ["der",      "die", "das",      "die"],
+        ["den",      "die", "das",      "die"],
+        ["dem",      "der", "dem",      "den ...n"],
+        ["des ...s", "der", "des ...s", "der"]
+    ],
+    "INDEFINITE": [
+        ["ein",        "eine",  "ein",        ""],
+        ["einen",      "eine",  "ein",        ""],
+        ["einem",      "einer", "einem",      "...n"],
+        ["eines ...s", "einer", "eines ...s", ""]
+    ],
+    "INDEFINITE_NONE": [
+        ["kein",        "keine",  "kein",        "keine"],
+        ["keinen",      "keine",  "kein",        "keine"],
+        ["keinem",      "keiner", "keinem",      "keinen ...n"],
+        ["keines ...s", "keiner", "keines ...s", "keiner"]
+    ]
+}
 
 # Colors
 R = "\033[31m"
@@ -49,7 +63,7 @@ def play_articles():
         gender = GENDERS[genderIndex]
         case = CASES[caseIndex][1]
         res = input("Article for {} {}: ".format(case, gender)).lower()
-        expected = ARTICLES_RESPONSES[caseIndex][genderIndex]
+        expected = RESPONSES["DEFINITE"][caseIndex][genderIndex]
         if res == expected:
             print(f"{G}Correct!{Z}")
         else:
@@ -81,8 +95,23 @@ if __name__ == "__main__":
     if len(sys.argv) == 2:
         play(sys.argv[1])
     else:
+        print("Definite")
         print("           male     female  neutral  Plural")
         print(f"Nominative d{G}er{Z}      d{B}ie{Z}     das      d{Y}ie{Z}")
         print(f"Accusative d{G}en{Z}      d{B}ie{Z}     das      d{Y}ie{Z}")
         print(f"Dative     d{G}em{Z}      d{B}er{Z}     dem      d{Y}en ...n{Z}")
         print(f"Genitive   d{G}es ...s{Z} d{B}er{Z}     des ...s d{Y}er{Z}")
+        print("")
+        print("Indefinite")
+        print("           male     female  neutral  Plural")
+        print(f"Nominative ein{G}{Z}        ein{B}e{Z}      ein        {Y}-{Z}")
+        print(f"Accusative ein{G}en{Z}      ein{B}e{Z}      ein        {Y}-{Z}")
+        print(f"Dative     ein{G}em{Z}      ein{B}er{Z}     einem      {Y}...n{Z}")
+        print(f"Genitive   ein{G}es ...s{Z} ein{B}er{Z}     eines ...s {Y}-{Z}")
+        print("")
+        print("Indefinite none")
+        print("           male     female  neutral  Plural")
+        print(f"Nominative {G}kein{Z}        {B}keine{Z}      kein        {Y}keine{Z}")
+        print(f"Accusative {G}keinen{Z}      {B}keine{Z}      kein        {Y}keine{Z}")
+        print(f"Dative     {G}keinem{Z}      {B}keiner{Z}     keinem      {Y}keinen ...n{Z}")
+        print(f"Genitive   {G}keines ...s{Z} {B}keiner{Z}     keines ...s {Y}keiner{Z}")
