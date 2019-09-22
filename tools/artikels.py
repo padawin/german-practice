@@ -40,22 +40,24 @@ Y = "\033[33m"
 Z = "\033[0m"
 
 
+def get_game(name):
+    return GAMES[name]["cb"]
+
+
 def play(name, n):
     try:
-        game = GAMES[name]["cb"]
-    except KeyError:
-        print("Invalid game")
+        game = get_game(name)
+        n = int(n)
+        while n:
+            res = game()
+            if res:
+                n -= 1
+    except KeyboardInterrupt:
         return
-    try:
-        if GAMES[name]["interactive"]:
-            n = int(n)
-            game(n)
-        else:
-            game()
     except ValueError:
         print("Invalid number of iterations")
-        return
-    except KeyboardInterrupt:
+    except KeyError:
+        print("Invalid game")
         return
 
 
@@ -80,44 +82,47 @@ def table_articles():
     print(f"Accusative {G}keinen{Z}      {B}keine{Z}      kein        {Y}keine{Z}")
     print(f"Dative     {G}keinem{Z}      {B}keiner{Z}     keinem      {Y}keinen ...n{Z}")
     print(f"Genitive   {G}keines ...s{Z} {B}keiner{Z}     keines ...s {Y}keiner{Z}")
+    return True
 
 
-def play_articles(n):
-    while n:
-        articleTypeIndex = random.randint(0, len(RESPONSES) - 1)
-        genderIndex = random.randint(0, len(GENDERS) - 1)
-        caseIndex = random.randint(0, len(CASES) - 1)
-        articleType = list(RESPONSES.keys())[articleTypeIndex]
-        gender = GENDERS[genderIndex]
-        case = CASES[caseIndex][1]
-        prompt = "{} article for {} {}: ".format(articleType, case, gender)
-        res = input(prompt).lower()
-        expected = RESPONSES[articleType][caseIndex][genderIndex]
-        if res == expected:
-            print(f"{G}Correct!{Z}")
-            n -= 1
-        else:
-            msg = f"{R}Incorrect! The correct response was: {expected}{Z}"
-            print(msg)
+def play_articles():
+    articleTypeIndex = random.randint(0, len(RESPONSES) - 1)
+    genderIndex = random.randint(0, len(GENDERS) - 1)
+    caseIndex = random.randint(0, len(CASES) - 1)
+    articleType = list(RESPONSES.keys())[articleTypeIndex]
+    gender = GENDERS[genderIndex]
+    case = CASES[caseIndex][1]
+    prompt = "{} article for {} {}: ".format(articleType, case, gender)
+    res = input(prompt).lower()
+    expected = RESPONSES[articleType][caseIndex][genderIndex]
+    if res == expected:
+        print(f"{G}Correct!{Z}")
+        return True
+    else:
+        msg = f"{R}Incorrect! The correct response was: {expected}{Z}"
+        print(msg)
+        return False
 
 
-def play_cases(n):
-    while n:
-        way = random.randint(0, 1)
-        caseIndex = random.randint(0, len(CASES) - 1)
-        if way == 0:
-            expected = CASES[caseIndex][1]
-            prompt = f"Case name for \033[36m{expected}{Z}? "
-        else:
-            expected = CASES[caseIndex][0]
-            prompt = f"Function of case \033[36m{expected}{Z}? "
-        res = input(prompt.format(CASES[caseIndex][way])).lower()
-        if res == expected.lower():
-            print(f"{G}Correct!{Z}")
-            n -= 1
-        else:
-            msg = f"{R}Incorrect! The correct response was: {expected}{Z}"
-            print(msg)
+def play_cases():
+    way = random.randint(0, 1)
+    caseIndex = random.randint(0, len(CASES) - 1)
+    if way == 0:
+        expected = CASES[caseIndex][1]
+        prompt = f"Case name for \033[36m{expected}{Z}? "
+    else:
+        expected = CASES[caseIndex][0]
+        prompt = f"Function of case \033[36m{expected}{Z}? "
+    res = input(prompt.format(CASES[caseIndex][way])).lower()
+    if res == expected.lower():
+        print(f"{G}Correct!{Z}")
+        return True
+
+    else:
+        msg = f"{R}Incorrect! The correct response was: {expected}{Z}"
+        print(msg)
+        return False
+
 
 
 GAMES = {
