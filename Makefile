@@ -1,2 +1,5 @@
+all:
+	go build
+
 install:
-	install tools/artikels.py $(BINDIR)/german_artikels
+	install german-practice $(BINDIR)/
