@@ -119,13 +119,14 @@ def play_articles():
 def play_cases():
     way = random.randint(0, 1)
     caseIndex = random.randint(0, len(CASES) - 1)
+    question = CASES[caseIndex][way]
     if way == 0:
         expected = CASES[caseIndex][1]
-        prompt = f"Case name for \033[36m{expected}{Z}? "
+        prompt = f"Case name for \033[36m{question}{Z}? "
     else:
         expected = CASES[caseIndex][0]
-        prompt = f"Function of case \033[36m{expected}{Z}? "
-    res = input(prompt.format(CASES[caseIndex][way])).lower()
+        prompt = f"Function of case \033[36m{question}{Z}? "
+    res = input(prompt).lower()
     if res == expected.lower():
         print(f"{G}Correct!{Z}")
         return True
