@@ -6,6 +6,8 @@ import (
 	"math/rand"
 	"os"
 	"strings"
+
+	"github.com/padawin/german-practice/format"
 )
 
 var genders [4]string = [4]string{"Masculine", "Feminine", "Neutral", "Plural"}
@@ -38,10 +40,6 @@ var responses map[string][4][4]string = map[string][4][4]string{
 	},
 }
 
-var red string = "\033[31m"
-var green string = "\033[32m"
-var reset string = "\033[0m"
-
 func readResponse(prompt string) string {
 	fmt.Print(prompt)
 	reader := bufio.NewReader(os.Stdin)
@@ -64,12 +62,12 @@ func Practice() bool {
 	prompt := fmt.Sprintf("%s article for %s %s: ", articleType, article_case, gender)
 	res := readResponse(prompt)
 	if res == strings.ToLower(expected) {
-		fmt.Printf("%sCorrect!%s\n", green, reset)
+		fmt.Printf("%sCorrect!%s\n", format.Green, format.Reset)
 		return true
 	} else {
 		msg := fmt.Sprintf(
 			"%sIncorrect! The correct response was: %s%s\n",
-			red, expected, reset,
+			format.Red, expected, format.Reset,
 		)
 		fmt.Println(msg)
 		return false
@@ -85,19 +83,19 @@ func PracticeCases() bool {
 	var expected string
 	if way == 0 {
 		expected = cases[caseIndex][1]
-		prompt = fmt.Sprintf("Case name for \033[36m%s%s? ", question, reset)
+		prompt = fmt.Sprintf("Case name for \033[36m%s%s? ", question, format.Reset)
 	} else {
 		expected = cases[caseIndex][0]
-		prompt = fmt.Sprintf("Function of case \033[36m%s%s? ", question, reset)
+		prompt = fmt.Sprintf("Function of case \033[36m%s%s? ", question, format.Reset)
 	}
 	res := readResponse(prompt)
 	if res == strings.ToLower(expected) {
-		fmt.Printf("%sCorrect!%s\n", green, reset)
+		fmt.Printf("%sCorrect!%s\n", format.Green, format.Reset)
 		return true
 	} else {
 		msg := fmt.Sprintf(
 			"%sIncorrect! The correct response was: %s%s\n",
-			red, expected, reset,
+			format.Red, expected, format.Reset,
 		)
 		fmt.Println(msg)
 		return false

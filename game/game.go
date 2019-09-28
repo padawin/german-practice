@@ -3,7 +3,7 @@ package game
 import (
 	"math/rand"
 
-	"./articles"
+	"github.com/padawin/german-practice/game/articles"
 )
 
 type game struct {

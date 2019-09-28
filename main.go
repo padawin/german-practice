@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"time"
 
-	"./game"
+	"github.com/padawin/german-practice/game"
 )
 
 func main() {
