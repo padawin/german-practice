@@ -10,6 +10,17 @@ import (
 	"github.com/padawin/german-practice/format"
 )
 
+type endings [4][4]string
+
+type responseStruct struct {
+	Root    string
+	Endings endings
+}
+
+func (r responseStruct) get(caseIndex int, genderIndex int) string {
+	return fmt.Sprintf("%s%s", r.Root, r.Endings[caseIndex][genderIndex])
+}
+
 var genders [4]string = [4]string{"Masculine", "Feminine", "Neutral", "Plural"}
 
 var cases [4][2]string = [4][2]string{
@@ -19,32 +30,42 @@ var cases [4][2]string = [4][2]string{
 	[2]string{"Possessif", "Genitif"},
 }
 
-var responses map[string][4][4]string = map[string][4][4]string{
-	"Definite": [4][4]string{
-		[4]string{"der", "die", "das", "die"},
-		[4]string{"den", "die", "das", "die"},
-		[4]string{"dem", "der", "dem", "den ...n"},
-		[4]string{"des ...s", "der", "des ...s", "der"},
-	},
-	"Indefinite": [4][4]string{
-		[4]string{"ein", "eine", "ein", ""},
-		[4]string{"einen", "eine", "ein", ""},
-		[4]string{"einem", "einer", "einem", "...n"},
-		[4]string{"eines ...s", "einer", "eines ...s", ""},
-	},
-	"Indefinite (none)": [4][4]string{
-		[4]string{"kein", "keine", "kein", "keine"},
-		[4]string{"keinen", "keine", "kein", "keine"},
-		[4]string{"keinem", "keiner", "keinem", "keinen ...n"},
-		[4]string{"keines ...s", "keiner", "keines ...s", "keiner"},
-	},
+var endingsDefinite = endings{
+	[4]string{"er", "ie", "as", "ie"},
+	[4]string{"en", "ie", "as", "ie"},
+	[4]string{"em", "er", "em", "en ...n"},
+	[4]string{"es ...s", "er", "es ...s", "er"},
+}
+var endingsPronouns = endings{
+	[4]string{"", "e", "", "e"},
+	[4]string{"en", "e", "", "e"},
+	[4]string{"em", "er", "em", "en ...n"},
+	[4]string{"es ...s", "er", "es ...s", "er"},
 }
 
-func readResponse(prompt string) string {
+var responses map[string]responseStruct = map[string]responseStruct{
+	"Definite":                                   responseStruct{Root: "d", Endings: endingsDefinite},
+	"Indefinite":                                 responseStruct{Root: "ein", Endings: endingsPronouns},
+	"Indefinite (none)":                          responseStruct{Root: "kein", Endings: endingsPronouns},
+	"Possessive (1st person singular)":           responseStruct{Root: "mein", Endings: endingsPronouns},
+	"Possessive (2nd person singular)":           responseStruct{Root: "dein", Endings: endingsPronouns},
+	"Possessive (3rd person singular masculine)": responseStruct{Root: "sein", Endings: endingsPronouns},
+	"Possessive (3rd person singular feminine)":  responseStruct{Root: "ihr", Endings: endingsPronouns},
+	"Possessive (3rd person singular neutral)":   responseStruct{Root: "sein", Endings: endingsPronouns},
+	"Possessive (1st person plural)":             responseStruct{Root: "unser", Endings: endingsPronouns},
+	"Possessive (2nd person plural)":             responseStruct{Root: "euer", Endings: endingsPronouns},
+	"Possessive (3rd person plural)":             responseStruct{Root: "ihr", Endings: endingsPronouns},
+	"Possessive (2nd person formal)":             responseStruct{Root: "Ihr", Endings: endingsPronouns},
+}
+
+func readResponse(prompt string, lower bool) string {
 	fmt.Print(prompt)
 	reader := bufio.NewReader(os.Stdin)
 	res, _ := reader.ReadString('\n')
-	return strings.TrimSpace(strings.ToLower(res))
+	if lower {
+		res = strings.ToLower(res)
+	}
+	return strings.TrimSpace(res)
 }
 
 func Practice() bool {
@@ -58,9 +79,9 @@ func Practice() bool {
 	articleType := keys[articleTypeIndex]
 	gender := genders[genderIndex]
 	article_case := cases[caseIndex][1]
-	expected := responses[articleType][caseIndex][genderIndex]
+	expected := responses[articleType].get(caseIndex, genderIndex)
 	prompt := fmt.Sprintf("%s article for %s %s: ", articleType, article_case, gender)
-	res := readResponse(prompt)
+	res := readResponse(prompt, false)
 	if res == strings.ToLower(expected) {
 		fmt.Printf("%sCorrect!%s\n", format.Green, format.Reset)
 		return true
@@ -88,7 +109,7 @@ func PracticeCases() bool {
 		expected = cases[caseIndex][0]
 		prompt = fmt.Sprintf("Function of case \033[36m%s%s? ", question, format.Reset)
 	}
-	res := readResponse(prompt)
+	res := readResponse(prompt, true)
 	if res == strings.ToLower(expected) {
 		fmt.Printf("%sCorrect!%s\n", format.Green, format.Reset)
 		return true
