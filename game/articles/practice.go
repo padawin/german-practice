@@ -116,7 +116,7 @@ func Practice() bool {
 	expected := strings.Join(response.get(caseIndex, genderIndex), "")
 	prompt := fmt.Sprintf("%s article for %s %s: ", response.Name, article_case, gender)
 	res := readResponse(prompt, false)
-	if res == strings.ToLower(expected) {
+	if res == expected {
 		fmt.Printf("%sCorrect!%s\n", format.Green, format.Reset)
 		return true
 	} else {
