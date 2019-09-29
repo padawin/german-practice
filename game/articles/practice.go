@@ -10,7 +10,16 @@ import (
 	"github.com/padawin/german-practice/format"
 )
 
-type endings [4][4]string
+type ending struct {
+	Article string
+	Noun    string
+}
+
+type endings [4][4]ending
+
+func newEnding(article string, noun string) ending {
+	return ending{Article: article, Noun: noun}
+}
 
 type responseStruct struct {
 	Root    string
@@ -18,7 +27,15 @@ type responseStruct struct {
 }
 
 func (r responseStruct) get(caseIndex int, genderIndex int) string {
-	return fmt.Sprintf("%s%s", r.Root, r.Endings[caseIndex][genderIndex])
+	var ret [2]string
+	endArticle := r.Endings[caseIndex][genderIndex].Article
+	endNoun := r.Endings[caseIndex][genderIndex].Noun
+	ret[0] = r.Root
+	ret[1] = endArticle
+	if endNoun != "" {
+		ret[1] = fmt.Sprintf("%s %s", ret[1], endNoun)
+	}
+	return strings.Join([]string{ret[0], ret[1]}, " ")
 }
 
 var genders [4]string = [4]string{"Masculine", "Feminine", "Neutral", "Plural"}
@@ -31,16 +48,16 @@ var cases [4][2]string = [4][2]string{
 }
 
 var endingsDefinite = endings{
-	[4]string{"er", "ie", "as", "ie"},
-	[4]string{"en", "ie", "as", "ie"},
-	[4]string{"em", "er", "em", "en ...n"},
-	[4]string{"es ...s", "er", "es ...s", "er"},
+	[4]ending{newEnding("er", ""), newEnding("ie", ""), newEnding("as", ""), newEnding("ie", "")},
+	[4]ending{newEnding("en", ""), newEnding("ie", ""), newEnding("as", ""), newEnding("ie", "")},
+	[4]ending{newEnding("em", ""), newEnding("er", ""), newEnding("em", ""), newEnding("en ...n", "")},
+	[4]ending{newEnding("es", "...s"), newEnding("er", ""), newEnding("es", "...s"), newEnding("er", "")},
 }
 var endingsPronouns = endings{
-	[4]string{"", "e", "", "e"},
-	[4]string{"en", "e", "", "e"},
-	[4]string{"em", "er", "em", "en ...n"},
-	[4]string{"es ...s", "er", "es ...s", "er"},
+	[4]ending{newEnding("", ""), newEnding("e", ""), newEnding("", ""), newEnding("e", "")},
+	[4]ending{newEnding("en", ""), newEnding("e", ""), newEnding("", ""), newEnding("e", "")},
+	[4]ending{newEnding("em", ""), newEnding("er", ""), newEnding("em", ""), newEnding("en", "...n")},
+	[4]ending{newEnding("es", "...s"), newEnding("er", ""), newEnding("es", "...s"), newEnding("er", "")},
 }
 
 var responses map[string]responseStruct = map[string]responseStruct{
