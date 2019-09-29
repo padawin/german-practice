@@ -27,7 +27,7 @@ type responseStruct struct {
 	Endings endings
 }
 
-func (r responseStruct) get(caseIndex int, genderIndex int) string {
+func (r responseStruct) get(caseIndex int, genderIndex int) []string {
 	var ret [2]string
 	endArticle := r.Endings[caseIndex][genderIndex].Article
 	endNoun := r.Endings[caseIndex][genderIndex].Noun
@@ -41,7 +41,16 @@ func (r responseStruct) get(caseIndex int, genderIndex int) string {
 	if endNoun != "" {
 		ret[1] = fmt.Sprintf("%s %s", ret[1], endNoun)
 	}
-	return strings.Join([]string{ret[0], ret[1]}, " ")
+	return []string{ret[0], ret[1]}
+}
+
+func (r responseStruct) getFormatted(caseIndex int, genderIndex int, size int, color string) string {
+	padFormat := fmt.Sprintf("%%%ds", size)
+	val := r.get(caseIndex, genderIndex)
+	noFormat := strings.Join(val, "")
+	colored := strings.Join([]string{val[0], color, val[1], format.Reset}, "")
+	padded := fmt.Sprintf(padFormat, noFormat)
+	return strings.Replace(padded, noFormat, colored, 1)
 }
 
 var genders [4]string = [4]string{"Masculine", "Feminine", "Neutral", "Plural"}
@@ -104,7 +113,7 @@ func Practice() bool {
 	gender := genders[genderIndex]
 	article_case := cases[caseIndex][1]
 	response := responses[articleTypeIndex]
-	expected := response.get(caseIndex, genderIndex)
+	expected := strings.Join(response.get(caseIndex, genderIndex), "")
 	prompt := fmt.Sprintf("%s article for %s %s: ", response.Name, article_case, gender)
 	res := readResponse(prompt, false)
 	if res == strings.ToLower(expected) {
