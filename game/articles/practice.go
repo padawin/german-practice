@@ -22,6 +22,7 @@ func newEnding(article string, noun string) ending {
 }
 
 type responseStruct struct {
+	Name    string
 	Root    string
 	Endings endings
 }
@@ -60,19 +61,19 @@ var endingsPronouns = endings{
 	[4]ending{newEnding("es", "...s"), newEnding("er", ""), newEnding("es", "...s"), newEnding("er", "")},
 }
 
-var responses map[string]responseStruct = map[string]responseStruct{
-	"Definite":                                   responseStruct{Root: "d", Endings: endingsDefinite},
-	"Indefinite":                                 responseStruct{Root: "ein", Endings: endingsPronouns},
-	"Indefinite (none)":                          responseStruct{Root: "kein", Endings: endingsPronouns},
-	"Possessive (1st person singular)":           responseStruct{Root: "mein", Endings: endingsPronouns},
-	"Possessive (2nd person singular)":           responseStruct{Root: "dein", Endings: endingsPronouns},
-	"Possessive (3rd person singular masculine)": responseStruct{Root: "sein", Endings: endingsPronouns},
-	"Possessive (3rd person singular feminine)":  responseStruct{Root: "ihr", Endings: endingsPronouns},
-	"Possessive (3rd person singular neutral)":   responseStruct{Root: "sein", Endings: endingsPronouns},
-	"Possessive (1st person plural)":             responseStruct{Root: "unser", Endings: endingsPronouns},
-	"Possessive (2nd person plural)":             responseStruct{Root: "euer", Endings: endingsPronouns},
-	"Possessive (3rd person plural)":             responseStruct{Root: "ihr", Endings: endingsPronouns},
-	"Possessive (2nd person formal)":             responseStruct{Root: "Ihr", Endings: endingsPronouns},
+var responses []responseStruct = []responseStruct{
+	responseStruct{Name: "Definite", Root: "d", Endings: endingsDefinite},
+	responseStruct{Name: "Indefinite", Root: "ein", Endings: endingsPronouns},
+	responseStruct{Name: "Indefinite (none)", Root: "kein", Endings: endingsPronouns},
+	responseStruct{Name: "Possessive (1st person singular)", Root: "mein", Endings: endingsPronouns},
+	responseStruct{Name: "Possessive (2nd person singular)", Root: "dein", Endings: endingsPronouns},
+	responseStruct{Name: "Possessive (3rd person singular masculine)", Root: "sein", Endings: endingsPronouns},
+	responseStruct{Name: "Possessive (3rd person singular feminine)", Root: "ihr", Endings: endingsPronouns},
+	responseStruct{Name: "Possessive (3rd person singular neutral)", Root: "sein", Endings: endingsPronouns},
+	responseStruct{Name: "Possessive (1st person plural)", Root: "unser", Endings: endingsPronouns},
+	responseStruct{Name: "Possessive (2nd person plural)", Root: "euer", Endings: endingsPronouns},
+	responseStruct{Name: "Possessive (3rd person plural)", Root: "ihr", Endings: endingsPronouns},
+	responseStruct{Name: "Possessive (2nd person formal)", Root: "Ihr", Endings: endingsPronouns},
 }
 
 func readResponse(prompt string, lower bool) string {
@@ -89,15 +90,11 @@ func Practice() bool {
 	articleTypeIndex := rand.Int() % len(responses)
 	genderIndex := rand.Int() % len(genders)
 	caseIndex := rand.Int() % len(cases)
-	keys := []string{}
-	for key, _ := range responses {
-		keys = append(keys, key)
-	}
-	articleType := keys[articleTypeIndex]
 	gender := genders[genderIndex]
 	article_case := cases[caseIndex][1]
-	expected := responses[articleType].get(caseIndex, genderIndex)
-	prompt := fmt.Sprintf("%s article for %s %s: ", articleType, article_case, gender)
+	response := responses[articleTypeIndex]
+	expected := response.get(caseIndex, genderIndex)
+	prompt := fmt.Sprintf("%s article for %s %s: ", response.Name, article_case, gender)
 	res := readResponse(prompt, false)
 	if res == strings.ToLower(expected) {
 		fmt.Printf("%sCorrect!%s\n", format.Green, format.Reset)
@@ -113,7 +110,6 @@ func Practice() bool {
 }
 
 func PracticeCases() bool {
-
 	way := rand.Int() % 2
 	caseIndex := rand.Int() % len(cases)
 	question := cases[caseIndex][way]
