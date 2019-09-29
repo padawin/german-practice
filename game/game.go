@@ -4,6 +4,7 @@ import (
 	"math/rand"
 
 	"github.com/padawin/german-practice/game/articles"
+	"github.com/padawin/german-practice/game/letters"
 )
 
 type game struct {
@@ -14,7 +15,7 @@ type game struct {
 
 func Games() map[string]game {
 	games := make(map[string]game)
-	games["articles-table"] = game{
+	games["articles-learn"] = game{
 		Callback:    articles.Table,
 		Help:        "Learn the articles table",
 		Interactive: false,
@@ -28,6 +29,16 @@ func Games() map[string]game {
 		Callback:    articles.PracticeCases,
 		Help:        "Learn which case represent which function (in french for now)",
 		Interactive: true,
+	}
+	games["letters"] = game{
+		Callback:    letters.Practice,
+		Help:        "Practice with letters pronounciation",
+		Interactive: true,
+	}
+	games["letters-learn"] = game{
+		Callback:    letters.List,
+		Help:        "Learn the letters pronounciation",
+		Interactive: false,
 	}
 	games["random"] = game{
 		Help:        "Start a random learning activity",
