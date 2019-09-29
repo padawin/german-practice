@@ -31,8 +31,13 @@ func (r responseStruct) get(caseIndex int, genderIndex int) string {
 	var ret [2]string
 	endArticle := r.Endings[caseIndex][genderIndex].Article
 	endNoun := r.Endings[caseIndex][genderIndex].Noun
-	ret[0] = r.Root
-	ret[1] = endArticle
+	if endArticle != "Ø" {
+		ret[0] = r.Root
+		ret[1] = endArticle
+	} else {
+		ret[1] = "-"
+	}
+
 	if endNoun != "" {
 		ret[1] = fmt.Sprintf("%s %s", ret[1], endNoun)
 	}
@@ -54,6 +59,12 @@ var endingsDefinite = endings{
 	[4]ending{newEnding("em", ""), newEnding("er", ""), newEnding("em", ""), newEnding("en ...n", "")},
 	[4]ending{newEnding("es", "...s"), newEnding("er", ""), newEnding("es", "...s"), newEnding("er", "")},
 }
+var endingsIndefinite = endings{
+	[4]ending{newEnding("", ""), newEnding("e", ""), newEnding("", ""), newEnding("Ø", "")},
+	[4]ending{newEnding("en", ""), newEnding("e", ""), newEnding("", ""), newEnding("Ø", "")},
+	[4]ending{newEnding("em", ""), newEnding("er", ""), newEnding("em", ""), newEnding("Ø", "...n")},
+	[4]ending{newEnding("es", "...s"), newEnding("er", ""), newEnding("es", "...s"), newEnding("Ø", "")},
+}
 var endingsPronouns = endings{
 	[4]ending{newEnding("", ""), newEnding("e", ""), newEnding("", ""), newEnding("e", "")},
 	[4]ending{newEnding("en", ""), newEnding("e", ""), newEnding("", ""), newEnding("e", "")},
@@ -63,7 +74,7 @@ var endingsPronouns = endings{
 
 var responses []responseStruct = []responseStruct{
 	responseStruct{Name: "Definite", Root: "d", Endings: endingsDefinite},
-	responseStruct{Name: "Indefinite", Root: "ein", Endings: endingsPronouns},
+	responseStruct{Name: "Indefinite", Root: "ein", Endings: endingsIndefinite},
 	responseStruct{Name: "Indefinite (none)", Root: "kein", Endings: endingsPronouns},
 	responseStruct{Name: "Possessive (1st person singular)", Root: "mein", Endings: endingsPronouns},
 	responseStruct{Name: "Possessive (2nd person singular)", Root: "dein", Endings: endingsPronouns},
