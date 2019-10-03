@@ -28,27 +28,34 @@ type responseStruct struct {
 }
 
 func (r responseStruct) get(caseIndex int, genderIndex int) []string {
-	var ret [2]string
+	var ret [3]string
 	endArticle := r.Endings[caseIndex][genderIndex].Article
 	endNoun := r.Endings[caseIndex][genderIndex].Noun
 	if endArticle != "Ø" {
 		ret[0] = r.Root
 		ret[1] = endArticle
 	} else {
+		ret[0] = ""
 		ret[1] = "-"
 	}
+	ret[2] = endNoun
 
-	if endNoun != "" {
-		ret[1] = fmt.Sprintf("%s %s", ret[1], endNoun)
+	return []string{ret[0], ret[1], ret[2]}
+}
+
+func (r responseStruct) getFull(caseIndex int, genderIndex int) string {
+	val := r.get(caseIndex, genderIndex)
+	if val[1] == "-" {
+		val[1] = ""
 	}
-	return []string{ret[0], ret[1]}
+	return strings.TrimSpace(fmt.Sprintf("%s%s %s", val[0], val[1], val[2]))
 }
 
 func (r responseStruct) getFormatted(caseIndex int, genderIndex int, size int, color string) string {
 	padFormat := fmt.Sprintf("%%%ds", size)
 	val := r.get(caseIndex, genderIndex)
 	noFormat := strings.Join(val, "")
-	colored := strings.Join([]string{val[0], color, val[1], format.Reset}, "")
+	colored := strings.Join([]string{val[0], color, val[1], " ", val[2], format.Reset}, "")
 	padded := fmt.Sprintf(padFormat, noFormat)
 	return strings.Replace(padded, noFormat, colored, 1)
 }
@@ -113,7 +120,7 @@ func Practice() bool {
 	gender := genders[genderIndex]
 	article_case := cases[caseIndex][1]
 	response := responses[articleTypeIndex]
-	expected := strings.Join(response.get(caseIndex, genderIndex), "")
+	expected := response.getFull(caseIndex, genderIndex)
 	prompt := fmt.Sprintf("%s article for %s %s: ", response.Name, article_case, gender)
 	res := readResponse(prompt, false)
 	if res == expected {
