@@ -31,7 +31,7 @@ func main() {
 		return
 	}
 	n := 1
-	if len(os.Args) == 3 {
+	if game.IsInteractive(game_name) && len(os.Args) == 3 {
 		var err error
 		n, err = strconv.Atoi(os.Args[2])
 		if err != nil {

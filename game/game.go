@@ -52,6 +52,11 @@ func IsValidGame(name string) bool {
 	return name == "random" || ok
 }
 
+func IsInteractive(name string) bool {
+	game := Games()[name]
+	return game.Interactive
+}
+
 func pickName() string {
 	var games []string
 	for name, game := range Games() {
