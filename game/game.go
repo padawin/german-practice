@@ -42,7 +42,7 @@ func Games() map[string]game {
 	}
 	games["random"] = game{
 		Help:        "Start a random learning activity",
-		Interactive: false,
+		Interactive: true,
 	}
 	return games
 }
@@ -60,7 +60,7 @@ func IsInteractive(name string) bool {
 func pickName() string {
 	var games []string
 	for name, game := range Games() {
-		if game.Interactive {
+		if game.Interactive && game.Callback != nil {
 			games = append(games, name)
 		}
 	}
