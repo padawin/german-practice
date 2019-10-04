@@ -72,7 +72,7 @@ var cases [4][2]string = [4][2]string{
 var endingsDefinite = endings{
 	[4]ending{newEnding("er", ""), newEnding("ie", ""), newEnding("as", ""), newEnding("ie", "")},
 	[4]ending{newEnding("en", ""), newEnding("ie", ""), newEnding("as", ""), newEnding("ie", "")},
-	[4]ending{newEnding("em", ""), newEnding("er", ""), newEnding("em", ""), newEnding("en", " ...n")},
+	[4]ending{newEnding("em", ""), newEnding("er", ""), newEnding("em", ""), newEnding("en", "...n")},
 	[4]ending{newEnding("es", "...s"), newEnding("er", ""), newEnding("es", "...s"), newEnding("er", "")},
 }
 var endingsIndefinite = endings{
