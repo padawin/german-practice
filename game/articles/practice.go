@@ -87,6 +87,12 @@ var endingsPronouns = endings{
 	[4]ending{newEnding("em", ""), newEnding("er", ""), newEnding("em", ""), newEnding("en", "...n")},
 	[4]ending{newEnding("es", "...s"), newEnding("er", ""), newEnding("es", "...s"), newEnding("er", "")},
 }
+var endingsEuer = endings{
+	[4]ending{newEnding("er", ""), newEnding("re", ""), newEnding("er", ""), newEnding("re", "")},
+	[4]ending{newEnding("ren", ""), newEnding("re", ""), newEnding("er", ""), newEnding("re", "")},
+	[4]ending{newEnding("rem", ""), newEnding("rer", ""), newEnding("rem", ""), newEnding("ren", "...n")},
+	[4]ending{newEnding("res", "...s"), newEnding("rer", ""), newEnding("res", "...s"), newEnding("rer", "")},
+}
 
 var responses []responseStruct = []responseStruct{
 	responseStruct{Name: "Definite", Root: "d", Endings: endingsDefinite},
@@ -98,7 +104,7 @@ var responses []responseStruct = []responseStruct{
 	responseStruct{Name: "Possessive (3rd person singular feminine)", Root: "ihr", Endings: endingsPronouns},
 	responseStruct{Name: "Possessive (3rd person singular neutral)", Root: "sein", Endings: endingsPronouns},
 	responseStruct{Name: "Possessive (1st person plural)", Root: "unser", Endings: endingsPronouns},
-	responseStruct{Name: "Possessive (2nd person plural)", Root: "euer", Endings: endingsPronouns},
+	responseStruct{Name: "Possessive (2nd person plural)", Root: "eu", Endings: endingsEuer},
 	responseStruct{Name: "Possessive (3rd person plural)", Root: "ihr", Endings: endingsPronouns},
 	responseStruct{Name: "Possessive (2nd person formal)", Root: "Ihr", Endings: endingsPronouns},
 }
