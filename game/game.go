@@ -46,6 +46,11 @@ func Games() map[string]game {
 		Callback:    pronomen.Practice,
 		Interactive: true,
 	}
+	games["pronomen-learn"] = game{
+		Help:        "Learn the pronomen",
+		Callback:    pronomen.Table,
+		Interactive: false,
+	}
 	games["random"] = game{
 		Help:        "Start a random learning activity",
 		Interactive: true,
