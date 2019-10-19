@@ -5,6 +5,7 @@ import (
 
 	"github.com/padawin/german-practice/game/articles"
 	"github.com/padawin/german-practice/game/letters"
+	"github.com/padawin/german-practice/game/pronomen"
 )
 
 type game struct {
@@ -39,6 +40,11 @@ func Games() map[string]game {
 		Callback:    letters.List,
 		Help:        "Learn the letters pronounciation",
 		Interactive: false,
+	}
+	games["pronomen"] = game{
+		Help:        "Practice with pronomen",
+		Callback:    pronomen.Practice,
+		Interactive: true,
 	}
 	games["random"] = game{
 		Help:        "Start a random learning activity",
