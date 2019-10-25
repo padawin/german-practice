@@ -6,6 +6,6 @@
 
 ## Usage
 
-	german_artikels <game> <iterations>
+	german-practice <game> <iterations>
 
-Calling just `german_artikels` displays the help.
+Calling just `german-practice` displays the help.
