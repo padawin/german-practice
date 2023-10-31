@@ -6,7 +6,7 @@ import (
 	"github.com/padawin/german-practice/format"
 )
 
-var colors = []string{format.Green, format.Blue, "", format.Yellow}
+var colors = []string{format.Green, format.Blue, format.Orange, format.Yellow}
 
 func Table() bool {
 	for _, response := range responses {
