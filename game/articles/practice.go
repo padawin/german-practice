@@ -22,22 +22,22 @@ func newEnding(article string, noun string) ending {
 }
 
 type responseStruct struct {
-	Name    string
-	Root    string
-	Endings endings
+	Name       string
+	Root       string
+	RootPlural string
+	Endings    endings
 }
 
 func (r responseStruct) get(caseIndex int, genderIndex int) []string {
 	var ret [3]string
 	endArticle := r.Endings[caseIndex][genderIndex].Article
 	endNoun := r.Endings[caseIndex][genderIndex].Noun
-	if endArticle != "Ø" {
-		ret[0] = r.Root
-		ret[1] = endArticle
+	if genderIndex == pluralGenderIndex && r.RootPlural != "" {
+		ret[0] = r.RootPlural
 	} else {
-		ret[0] = ""
-		ret[1] = "-"
+		ret[0] = r.Root
 	}
+	ret[1] = endArticle
 	ret[2] = endNoun
 
 	return []string{ret[0], ret[1], ret[2]}
@@ -60,6 +60,8 @@ func (r responseStruct) getFormatted(caseIndex int, genderIndex int, size int, c
 	return strings.Replace(padded, noFormat, colored, 1)
 }
 
+const pluralGenderIndex = 3
+
 var genders [4]string = [4]string{"Masculine", "Feminine", "Neutral", "Plural"}
 
 var cases [4][2]string = [4][2]string{
@@ -75,13 +77,7 @@ var endingsDefinite = endings{
 	{newEnding("em", ""), newEnding("er", ""), newEnding("em", ""), newEnding("en", "...n")},
 	{newEnding("es", "...s"), newEnding("er", ""), newEnding("es", "...s"), newEnding("er", "")},
 }
-var endingsIndefinite = endings{
-	{newEnding("", ""), newEnding("e", ""), newEnding("", ""), newEnding("Ø", "")},
-	{newEnding("en", ""), newEnding("e", ""), newEnding("", ""), newEnding("Ø", "")},
-	{newEnding("em", ""), newEnding("er", ""), newEnding("em", ""), newEnding("Ø", "...n")},
-	{newEnding("es", "...s"), newEnding("er", ""), newEnding("es", "...s"), newEnding("Ø", "")},
-}
-var endingsPronouns = endings{
+var endingsIndefiniteAndPronouns = endings{
 	{newEnding("", ""), newEnding("e", ""), newEnding("", ""), newEnding("e", "")},
 	{newEnding("en", ""), newEnding("e", ""), newEnding("", ""), newEnding("e", "")},
 	{newEnding("em", ""), newEnding("er", ""), newEnding("em", ""), newEnding("en", "...n")},
@@ -96,17 +92,16 @@ var endingsEuer = endings{
 
 var responses []responseStruct = []responseStruct{
 	{Name: "Definite", Root: "d", Endings: endingsDefinite},
-	{Name: "Indefinite", Root: "ein", Endings: endingsIndefinite},
-	{Name: "Indefinite (none)", Root: "kein", Endings: endingsPronouns},
-	{Name: "Possessive (1st person singular)", Root: "mein", Endings: endingsPronouns},
-	{Name: "Possessive (2nd person singular)", Root: "dein", Endings: endingsPronouns},
-	{Name: "Possessive (3rd person singular masculine)", Root: "sein", Endings: endingsPronouns},
-	{Name: "Possessive (3rd person singular feminine)", Root: "ihr", Endings: endingsPronouns},
-	{Name: "Possessive (3rd person singular neutral)", Root: "sein", Endings: endingsPronouns},
-	{Name: "Possessive (1st person plural)", Root: "unser", Endings: endingsPronouns},
+	{Name: "Indefinite", Root: "ein", RootPlural: "kein", Endings: endingsIndefiniteAndPronouns},
+	{Name: "Possessive (1st person singular)", Root: "mein", Endings: endingsIndefiniteAndPronouns},
+	{Name: "Possessive (2nd person singular)", Root: "dein", Endings: endingsIndefiniteAndPronouns},
+	{Name: "Possessive (3rd person singular masculine)", Root: "sein", Endings: endingsIndefiniteAndPronouns},
+	{Name: "Possessive (3rd person singular feminine)", Root: "ihr", Endings: endingsIndefiniteAndPronouns},
+	{Name: "Possessive (3rd person singular neutral)", Root: "sein", Endings: endingsIndefiniteAndPronouns},
+	{Name: "Possessive (1st person plural)", Root: "unser", Endings: endingsIndefiniteAndPronouns},
 	{Name: "Possessive (2nd person plural)", Root: "eu", Endings: endingsEuer},
-	{Name: "Possessive (3rd person plural)", Root: "ihr", Endings: endingsPronouns},
-	{Name: "Possessive (2nd person formal)", Root: "Ihr", Endings: endingsPronouns},
+	{Name: "Possessive (3rd person plural)", Root: "ihr", Endings: endingsIndefiniteAndPronouns},
+	{Name: "Possessive (2nd person formal)", Root: "Ihr", Endings: endingsIndefiniteAndPronouns},
 }
 
 func readResponse(prompt string, lower bool) string {
