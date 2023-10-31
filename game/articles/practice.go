@@ -63,50 +63,50 @@ func (r responseStruct) getFormatted(caseIndex int, genderIndex int, size int, c
 var genders [4]string = [4]string{"Masculine", "Feminine", "Neutral", "Plural"}
 
 var cases [4][2]string = [4][2]string{
-	[2]string{"Sujet", "Nominatif"},
-	[2]string{"COD", "Accusatif"},
-	[2]string{"COI", "Datif"},
-	[2]string{"Possessif", "Genitif"},
+	{"Sujet", "Nominatif"},
+	{"COD", "Accusatif"},
+	{"COI", "Datif"},
+	{"Possessif", "Genitif"},
 }
 
 var endingsDefinite = endings{
-	[4]ending{newEnding("er", ""), newEnding("ie", ""), newEnding("as", ""), newEnding("ie", "")},
-	[4]ending{newEnding("en", ""), newEnding("ie", ""), newEnding("as", ""), newEnding("ie", "")},
-	[4]ending{newEnding("em", ""), newEnding("er", ""), newEnding("em", ""), newEnding("en", "...n")},
-	[4]ending{newEnding("es", "...s"), newEnding("er", ""), newEnding("es", "...s"), newEnding("er", "")},
+	{newEnding("er", ""), newEnding("ie", ""), newEnding("as", ""), newEnding("ie", "")},
+	{newEnding("en", ""), newEnding("ie", ""), newEnding("as", ""), newEnding("ie", "")},
+	{newEnding("em", ""), newEnding("er", ""), newEnding("em", ""), newEnding("en", "...n")},
+	{newEnding("es", "...s"), newEnding("er", ""), newEnding("es", "...s"), newEnding("er", "")},
 }
 var endingsIndefinite = endings{
-	[4]ending{newEnding("", ""), newEnding("e", ""), newEnding("", ""), newEnding("Ø", "")},
-	[4]ending{newEnding("en", ""), newEnding("e", ""), newEnding("", ""), newEnding("Ø", "")},
-	[4]ending{newEnding("em", ""), newEnding("er", ""), newEnding("em", ""), newEnding("Ø", "...n")},
-	[4]ending{newEnding("es", "...s"), newEnding("er", ""), newEnding("es", "...s"), newEnding("Ø", "")},
+	{newEnding("", ""), newEnding("e", ""), newEnding("", ""), newEnding("Ø", "")},
+	{newEnding("en", ""), newEnding("e", ""), newEnding("", ""), newEnding("Ø", "")},
+	{newEnding("em", ""), newEnding("er", ""), newEnding("em", ""), newEnding("Ø", "...n")},
+	{newEnding("es", "...s"), newEnding("er", ""), newEnding("es", "...s"), newEnding("Ø", "")},
 }
 var endingsPronouns = endings{
-	[4]ending{newEnding("", ""), newEnding("e", ""), newEnding("", ""), newEnding("e", "")},
-	[4]ending{newEnding("en", ""), newEnding("e", ""), newEnding("", ""), newEnding("e", "")},
-	[4]ending{newEnding("em", ""), newEnding("er", ""), newEnding("em", ""), newEnding("en", "...n")},
-	[4]ending{newEnding("es", "...s"), newEnding("er", ""), newEnding("es", "...s"), newEnding("er", "")},
+	{newEnding("", ""), newEnding("e", ""), newEnding("", ""), newEnding("e", "")},
+	{newEnding("en", ""), newEnding("e", ""), newEnding("", ""), newEnding("e", "")},
+	{newEnding("em", ""), newEnding("er", ""), newEnding("em", ""), newEnding("en", "...n")},
+	{newEnding("es", "...s"), newEnding("er", ""), newEnding("es", "...s"), newEnding("er", "")},
 }
 var endingsEuer = endings{
-	[4]ending{newEnding("er", ""), newEnding("re", ""), newEnding("er", ""), newEnding("re", "")},
-	[4]ending{newEnding("ren", ""), newEnding("re", ""), newEnding("er", ""), newEnding("re", "")},
-	[4]ending{newEnding("rem", ""), newEnding("rer", ""), newEnding("rem", ""), newEnding("ren", "...n")},
-	[4]ending{newEnding("res", "...s"), newEnding("rer", ""), newEnding("res", "...s"), newEnding("rer", "")},
+	{newEnding("er", ""), newEnding("re", ""), newEnding("er", ""), newEnding("re", "")},
+	{newEnding("ren", ""), newEnding("re", ""), newEnding("er", ""), newEnding("re", "")},
+	{newEnding("rem", ""), newEnding("rer", ""), newEnding("rem", ""), newEnding("ren", "...n")},
+	{newEnding("res", "...s"), newEnding("rer", ""), newEnding("res", "...s"), newEnding("rer", "")},
 }
 
 var responses []responseStruct = []responseStruct{
-	responseStruct{Name: "Definite", Root: "d", Endings: endingsDefinite},
-	responseStruct{Name: "Indefinite", Root: "ein", Endings: endingsIndefinite},
-	responseStruct{Name: "Indefinite (none)", Root: "kein", Endings: endingsPronouns},
-	responseStruct{Name: "Possessive (1st person singular)", Root: "mein", Endings: endingsPronouns},
-	responseStruct{Name: "Possessive (2nd person singular)", Root: "dein", Endings: endingsPronouns},
-	responseStruct{Name: "Possessive (3rd person singular masculine)", Root: "sein", Endings: endingsPronouns},
-	responseStruct{Name: "Possessive (3rd person singular feminine)", Root: "ihr", Endings: endingsPronouns},
-	responseStruct{Name: "Possessive (3rd person singular neutral)", Root: "sein", Endings: endingsPronouns},
-	responseStruct{Name: "Possessive (1st person plural)", Root: "unser", Endings: endingsPronouns},
-	responseStruct{Name: "Possessive (2nd person plural)", Root: "eu", Endings: endingsEuer},
-	responseStruct{Name: "Possessive (3rd person plural)", Root: "ihr", Endings: endingsPronouns},
-	responseStruct{Name: "Possessive (2nd person formal)", Root: "Ihr", Endings: endingsPronouns},
+	{Name: "Definite", Root: "d", Endings: endingsDefinite},
+	{Name: "Indefinite", Root: "ein", Endings: endingsIndefinite},
+	{Name: "Indefinite (none)", Root: "kein", Endings: endingsPronouns},
+	{Name: "Possessive (1st person singular)", Root: "mein", Endings: endingsPronouns},
+	{Name: "Possessive (2nd person singular)", Root: "dein", Endings: endingsPronouns},
+	{Name: "Possessive (3rd person singular masculine)", Root: "sein", Endings: endingsPronouns},
+	{Name: "Possessive (3rd person singular feminine)", Root: "ihr", Endings: endingsPronouns},
+	{Name: "Possessive (3rd person singular neutral)", Root: "sein", Endings: endingsPronouns},
+	{Name: "Possessive (1st person plural)", Root: "unser", Endings: endingsPronouns},
+	{Name: "Possessive (2nd person plural)", Root: "eu", Endings: endingsEuer},
+	{Name: "Possessive (3rd person plural)", Root: "ihr", Endings: endingsPronouns},
+	{Name: "Possessive (2nd person formal)", Root: "Ihr", Endings: endingsPronouns},
 }
 
 func readResponse(prompt string, lower bool) string {

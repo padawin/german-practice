@@ -18,7 +18,7 @@ func Table() bool {
 		fmt.Println()
 		for caseIndex, caseName := range cases {
 			fmt.Printf("%-10v", caseName[1])
-			for genderIndex, _ := range genders {
+			for genderIndex := range genders {
 				val := response.getFormatted(caseIndex, genderIndex, -13, colors[genderIndex])
 				fmt.Print(val)
 			}
