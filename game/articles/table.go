@@ -9,8 +9,8 @@ import (
 var colors = []string{format.Green, format.Blue, format.Orange, format.Yellow}
 
 func Table() bool {
-	for _, response := range responses {
-		fmt.Printf("%s%s%s\n", format.Red, response.Name, format.Reset)
+	for _, article := range articles {
+		fmt.Printf("%s%s%s\n", format.Red, article.GetName(), format.Reset)
 		fmt.Printf("%10v", "")
 		for _, gender := range genders {
 			fmt.Printf("%-13v", gender)
@@ -19,7 +19,7 @@ func Table() bool {
 		for caseIndex, caseName := range cases {
 			fmt.Printf("%-10v", caseName[1])
 			for genderIndex := range genders {
-				val := response.getFormatted(caseIndex, genderIndex, -13, colors[genderIndex])
+				val := article.CompileFormatted(Gender(genderIndex), Case(caseIndex), -13, colors[genderIndex])
 				fmt.Print(val)
 			}
 			fmt.Println()

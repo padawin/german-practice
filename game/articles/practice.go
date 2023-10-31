@@ -10,59 +10,25 @@ import (
 	"github.com/padawin/german-practice/format"
 )
 
-type ending struct {
-	Article string
-	Noun    string
-}
+type Gender int
 
-type endings [4][4]ending
-
-func newEnding(article string, noun string) ending {
-	return ending{Article: article, Noun: noun}
-}
-
-type responseStruct struct {
-	Name       string
-	Root       string
-	RootPlural string
-	Endings    endings
-}
-
-func (r responseStruct) get(caseIndex int, genderIndex int) []string {
-	var ret [3]string
-	endArticle := r.Endings[caseIndex][genderIndex].Article
-	endNoun := r.Endings[caseIndex][genderIndex].Noun
-	if genderIndex == pluralGenderIndex && r.RootPlural != "" {
-		ret[0] = r.RootPlural
-	} else {
-		ret[0] = r.Root
-	}
-	ret[1] = endArticle
-	ret[2] = endNoun
-
-	return []string{ret[0], ret[1], ret[2]}
-}
-
-func (r responseStruct) getFull(caseIndex int, genderIndex int) string {
-	val := r.get(caseIndex, genderIndex)
-	if val[1] == "-" {
-		val[1] = ""
-	}
-	return strings.TrimSpace(fmt.Sprintf("%s%s %s", val[0], val[1], val[2]))
-}
-
-func (r responseStruct) getFormatted(caseIndex int, genderIndex int, size int, color string) string {
-	padFormat := fmt.Sprintf("%%%ds", size)
-	val := r.get(caseIndex, genderIndex)
-	noFormat := strings.Join(val, "")
-	colored := strings.Join([]string{val[0], color, val[1], " ", val[2], format.Reset}, "")
-	padded := fmt.Sprintf(padFormat, noFormat)
-	return strings.Replace(padded, noFormat, colored, 1)
-}
-
-const pluralGenderIndex = 3
+const (
+	genderMasculine Gender = iota
+	genderFeminine
+	genderNeutral
+	genderPlural
+)
 
 var genders [4]string = [4]string{"Masculine", "Feminine", "Neutral", "Plural"}
+
+type Case int
+
+const (
+	caseNominative Case = iota
+	caseAccusative
+	caseDative
+	caseGenitive
+)
 
 var cases [4][2]string = [4][2]string{
 	{"Sujet", "Nominatif"},
@@ -71,37 +37,159 @@ var cases [4][2]string = [4][2]string{
 	{"Possessif", "Genitif"},
 }
 
-var endingsDefinite = endings{
-	{newEnding("er", ""), newEnding("ie", ""), newEnding("as", ""), newEnding("ie", "")},
-	{newEnding("en", ""), newEnding("ie", ""), newEnding("as", ""), newEnding("ie", "")},
-	{newEnding("em", ""), newEnding("er", ""), newEnding("em", ""), newEnding("en", "...n")},
-	{newEnding("es", "...s"), newEnding("er", ""), newEnding("es", "...s"), newEnding("er", "")},
-}
-var endingsIndefiniteAndPronouns = endings{
-	{newEnding("", ""), newEnding("e", ""), newEnding("", ""), newEnding("e", "")},
-	{newEnding("en", ""), newEnding("e", ""), newEnding("", ""), newEnding("e", "")},
-	{newEnding("em", ""), newEnding("er", ""), newEnding("em", ""), newEnding("en", "...n")},
-	{newEnding("es", "...s"), newEnding("er", ""), newEnding("es", "...s"), newEnding("er", "")},
-}
-var endingsEuer = endings{
-	{newEnding("er", ""), newEnding("re", ""), newEnding("er", ""), newEnding("re", "")},
-	{newEnding("ren", ""), newEnding("re", ""), newEnding("er", ""), newEnding("re", "")},
-	{newEnding("rem", ""), newEnding("rer", ""), newEnding("rem", ""), newEnding("ren", "...n")},
-	{newEnding("res", "...s"), newEnding("rer", ""), newEnding("res", "...s"), newEnding("rer", "")},
+type ArticleType int
+
+const (
+	articleTypeEin ArticleType = iota
+	articleTypeDer
+)
+
+type Article interface {
+	Compile(Gender, Case) string
+	CompileFormatted(Gender, Case, int, string) string
+	GetName() string
+	GetValue() string
 }
 
-var responses []responseStruct = []responseStruct{
-	{Name: "Definite", Root: "d", Endings: endingsDefinite},
-	{Name: "Indefinite", Root: "ein", RootPlural: "kein", Endings: endingsIndefiniteAndPronouns},
-	{Name: "Possessive (1st person singular)", Root: "mein", Endings: endingsIndefiniteAndPronouns},
-	{Name: "Possessive (2nd person singular)", Root: "dein", Endings: endingsIndefiniteAndPronouns},
-	{Name: "Possessive (3rd person singular masculine)", Root: "sein", Endings: endingsIndefiniteAndPronouns},
-	{Name: "Possessive (3rd person singular feminine)", Root: "ihr", Endings: endingsIndefiniteAndPronouns},
-	{Name: "Possessive (3rd person singular neutral)", Root: "sein", Endings: endingsIndefiniteAndPronouns},
-	{Name: "Possessive (1st person plural)", Root: "unser", Endings: endingsIndefiniteAndPronouns},
-	{Name: "Possessive (2nd person plural)", Root: "eu", Endings: endingsEuer},
-	{Name: "Possessive (3rd person plural)", Root: "ihr", Endings: endingsIndefiniteAndPronouns},
-	{Name: "Possessive (2nd person formal)", Root: "Ihr", Endings: endingsIndefiniteAndPronouns},
+type ArticleImpl struct {
+	name        string
+	value       string
+	hasNoun     bool
+	articleType ArticleType
+	isPattern5  bool
+}
+
+type articleOption func(*ArticleImpl)
+
+func withNoun() func(*ArticleImpl) {
+	return func(article *ArticleImpl) {
+		article.hasNoun = true
+	}
+}
+
+func isPattern5() func(*ArticleImpl) {
+	return func(article *ArticleImpl) {
+		article.isPattern5 = true
+	}
+}
+
+func NewArticle(articleType ArticleType, name, value string, opts ...articleOption) *ArticleImpl {
+	res := &ArticleImpl{
+		name:        name,
+		value:       value,
+		articleType: articleType,
+	}
+
+	for _, opt := range opts {
+		opt(res)
+	}
+
+	return res
+}
+
+func (a *ArticleImpl) getBaseAndEndings(genderIndex Gender, caseIndex Case) (string, string, string) {
+	base := a.value
+	ending := endings[caseIndex][genderIndex].strong
+	endingNoun := endings[caseIndex][genderIndex].noun
+
+	// Handle exception for no articles with no ending
+	isMasculineException := genderIndex == genderMasculine && caseIndex == caseNominative
+	isNeutralException := genderIndex == genderNeutral && (caseIndex == caseNominative || caseIndex == caseAccusative)
+	if a.articleType == articleTypeEin && a.value != "eur" && (isMasculineException || isNeutralException) {
+		ending = ""
+	}
+
+	// Handle exception for replacement of base ending (for definite articles,
+	// der, die and das)
+	if base == "d" {
+		if ending == "e" {
+			ending = "ie"
+		} else if genderIndex == genderNeutral && (caseIndex == caseNominative || caseIndex == caseAccusative) {
+			ending = "as"
+		}
+	}
+
+	if a.hasNoun && endingNoun != "" {
+		endingNoun = "..." + endingNoun
+	} else {
+		endingNoun = ""
+	}
+
+	return base, ending, endingNoun
+}
+
+func (a *ArticleImpl) Compile(genderIndex Gender, caseIndex Case) string {
+	base, ending, endingNoun := a.getBaseAndEndings(genderIndex, caseIndex)
+	return base + ending + " " + endingNoun
+}
+
+func (a *ArticleImpl) CompileFormatted(genderIndex Gender, caseIndex Case, size int, color string) string {
+	base, ending, endingNoun := a.getBaseAndEndings(genderIndex, caseIndex)
+	noFormat := base + ending + " " + endingNoun
+	colored := strings.Join([]string{base, color, ending, " ", endingNoun, format.Reset}, "")
+
+	padFormat := fmt.Sprintf("%%%ds", size)
+	padded := fmt.Sprintf(padFormat, noFormat)
+	return strings.Replace(padded, noFormat, colored, 1)
+}
+
+func (a *ArticleImpl) GetName() string {
+	return a.name
+}
+
+func (a *ArticleImpl) GetValue() string {
+	return a.value
+}
+
+type ending struct {
+	strong string
+	weak   string
+	noun   string
+}
+
+// indefinite and possessive
+var articles = []Article{
+	NewArticle(articleTypeEin, "a", "ein", withNoun()),
+	NewArticle(articleTypeEin, "none", "kein", withNoun()),
+	NewArticle(articleTypeEin, "my + noun", "mein", withNoun()),
+	NewArticle(articleTypeEin, "your (singular) + noun", "dein", withNoun()),
+	NewArticle(articleTypeEin, "his + noun", "sein", withNoun()),
+	NewArticle(articleTypeEin, "its + noun", "sein", withNoun()),
+	NewArticle(articleTypeEin, "her + noun", "ihr", withNoun()),
+	NewArticle(articleTypeEin, "our + noun", "unser", withNoun()),
+	NewArticle(articleTypeEin, "your (plural) + noun", "eur", withNoun()),
+	NewArticle(articleTypeEin, "their + noun", "ihr", withNoun()),
+	NewArticle(articleTypeEin, "your (formal) + noun", "Ihr", withNoun()),
+
+	NewArticle(articleTypeDer, "The", "d", withNoun()),
+	NewArticle(articleTypeDer, "all", "all", withNoun()),
+	NewArticle(articleTypeDer, "many", "viel", withNoun()),
+	NewArticle(articleTypeDer, "which", "welch", withNoun()),
+	NewArticle(articleTypeDer, "this", "dies", withNoun()),
+	NewArticle(articleTypeDer, "every", "jed", withNoun()),
+	NewArticle(articleTypeDer, "that", "jen", withNoun()),
+	NewArticle(articleTypeDer, "some", "einig", withNoun()),
+	NewArticle(articleTypeDer, "few", "wenig", withNoun()),
+	NewArticle(articleTypeDer, "many a, some", "manch", withNoun()),
+	NewArticle(articleTypeDer, "diverse", "verschieden", withNoun()),
+	NewArticle(articleTypeDer, "such [a]", "solch", withNoun()),
+	// Possessive without noun after (e.g. "mine")
+	NewArticle(articleTypeDer, "mine", "mein"),
+	NewArticle(articleTypeDer, "yours (singular)", "dein"),
+	NewArticle(articleTypeDer, "his", "sein"),
+	NewArticle(articleTypeDer, "its", "sein"),
+	NewArticle(articleTypeDer, "her", "ihr"),
+	NewArticle(articleTypeDer, "our", "unser"),
+	NewArticle(articleTypeDer, "yours (plural)", "eur"),
+	NewArticle(articleTypeDer, "theirs", "ihr"),
+	NewArticle(articleTypeDer, "yours (formal)", "Ihr"),
+}
+
+var endings = [][]ending{
+	{{strong: "er", weak: "e"} /*      */, {strong: "e", weak: "e"}, {strong: "es", weak: "e" /*       */}, {strong: "e", weak: "n"}},
+	{{strong: "en", weak: "n"} /*      */, {strong: "e", weak: "e"}, {strong: "es", weak: "e" /*       */}, {strong: "e", weak: "n"}},
+	{{strong: "em", weak: "n"} /*      */, {strong: "er", weak: "n"}, {strong: "em", weak: "n" /*      */}, {strong: "en", weak: "n", noun: "n"}},
+	{{strong: "es", weak: "n", noun: "s"}, {strong: "er", weak: "n"}, {strong: "es", weak: "n", noun: "s"}, {strong: "er", weak: "n"}},
 }
 
 func readResponse(prompt string, lower bool) string {
@@ -115,14 +203,14 @@ func readResponse(prompt string, lower bool) string {
 }
 
 func Practice() bool {
-	articleTypeIndex := rand.Int() % len(responses)
+	articleIndex := rand.Int() % len(articles)
+	article := articles[articleIndex]
 	genderIndex := rand.Int() % len(genders)
 	caseIndex := rand.Int() % len(cases)
 	gender := genders[genderIndex]
-	article_case := cases[caseIndex][1]
-	response := responses[articleTypeIndex]
-	expected := response.getFull(caseIndex, genderIndex)
-	prompt := fmt.Sprintf("%s article for %s %s: ", response.Name, article_case, gender)
+	articleCase := cases[caseIndex][1]
+	expected := article.Compile(Gender(genderIndex), Case(caseIndex))
+	prompt := fmt.Sprintf(`"%s" for %s %s: `, article.GetName(), articleCase, gender)
 	res := readResponse(prompt, false)
 	if res == expected {
 		fmt.Printf("%sCorrect!%s\n", format.Green, format.Reset)
