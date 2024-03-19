@@ -7,6 +7,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/padawin/german-practice/endings"
 	"github.com/padawin/german-practice/format"
 )
 
@@ -44,14 +45,7 @@ const (
 	articleTypeDer
 )
 
-type Article interface {
-	Compile(Gender, Case) string
-	CompileFormatted(Gender, Case, int, string) string
-	GetName() string
-	GetValue() string
-}
-
-type ArticleImpl struct {
+type Article struct {
 	name        string
 	value       string
 	hasNoun     bool
@@ -59,22 +53,22 @@ type ArticleImpl struct {
 	isPattern5  bool
 }
 
-type articleOption func(*ArticleImpl)
+type articleOption func(*Article)
 
-func withNoun() func(*ArticleImpl) {
-	return func(article *ArticleImpl) {
+func withNoun() func(*Article) {
+	return func(article *Article) {
 		article.hasNoun = true
 	}
 }
 
-func isPattern5() func(*ArticleImpl) {
-	return func(article *ArticleImpl) {
+func isPattern5() func(*Article) {
+	return func(article *Article) {
 		article.isPattern5 = true
 	}
 }
 
-func NewArticle(articleType ArticleType, name, value string, opts ...articleOption) *ArticleImpl {
-	res := &ArticleImpl{
+func NewArticle(articleType ArticleType, name, value string, opts ...articleOption) *Article {
+	res := &Article{
 		name:        name,
 		value:       value,
 		articleType: articleType,
@@ -87,10 +81,10 @@ func NewArticle(articleType ArticleType, name, value string, opts ...articleOpti
 	return res
 }
 
-func (a *ArticleImpl) getBaseAndEndings(genderIndex Gender, caseIndex Case) (string, string, string) {
+func (a *Article) getBaseAndEndings(genderIndex Gender, caseIndex Case) (string, string, string) {
 	base := a.value
-	ending := endings[caseIndex][genderIndex].strong
-	endingNoun := endings[caseIndex][genderIndex].noun
+	ending := endings.Endings[caseIndex][genderIndex].Strong
+	endingNoun := endings.Endings[caseIndex][genderIndex].Noun
 
 	// Handle exception for no articles with no ending
 	isMasculineException := genderIndex == genderMasculine && caseIndex == caseNominative
@@ -118,12 +112,12 @@ func (a *ArticleImpl) getBaseAndEndings(genderIndex Gender, caseIndex Case) (str
 	return base, ending, endingNoun
 }
 
-func (a *ArticleImpl) Compile(genderIndex Gender, caseIndex Case) string {
+func (a *Article) Compile(genderIndex Gender, caseIndex Case) string {
 	base, ending, endingNoun := a.getBaseAndEndings(genderIndex, caseIndex)
-	return base + ending + " " + endingNoun
+	return strings.TrimSpace(base + ending + " " + endingNoun)
 }
 
-func (a *ArticleImpl) CompileFormatted(genderIndex Gender, caseIndex Case, size int, color string) string {
+func (a *Article) CompileFormatted(genderIndex Gender, caseIndex Case, size int, color string) string {
 	base, ending, endingNoun := a.getBaseAndEndings(genderIndex, caseIndex)
 	noFormat := base + ending + " " + endingNoun
 	colored := strings.Join([]string{base, color, ending, " ", endingNoun, format.Reset}, "")
@@ -133,22 +127,16 @@ func (a *ArticleImpl) CompileFormatted(genderIndex Gender, caseIndex Case, size 
 	return strings.Replace(padded, noFormat, colored, 1)
 }
 
-func (a *ArticleImpl) GetName() string {
+func (a *Article) GetName() string {
 	return a.name
 }
 
-func (a *ArticleImpl) GetValue() string {
+func (a *Article) GetValue() string {
 	return a.value
 }
 
-type ending struct {
-	strong string
-	weak   string
-	noun   string
-}
-
 // indefinite and possessive
-var articles = []Article{
+var articles = []*Article{
 	NewArticle(articleTypeEin, "a", "ein", withNoun()),
 	NewArticle(articleTypeEin, "none", "kein", withNoun()),
 	NewArticle(articleTypeEin, "my + noun", "mein", withNoun()),
@@ -161,19 +149,22 @@ var articles = []Article{
 	NewArticle(articleTypeEin, "their + noun", "ihr", withNoun()),
 	NewArticle(articleTypeEin, "your (formal) + noun", "Ihr", withNoun()),
 
+	// only plural
 	NewArticle(articleTypeDer, "The", "d", withNoun()),
 	NewArticle(articleTypeDer, "all", "all", withNoun()),
 	NewArticle(articleTypeDer, "many", "viel", withNoun()),
-	NewArticle(articleTypeDer, "which", "welch", withNoun()),
-	NewArticle(articleTypeDer, "this", "dies", withNoun()),
-	NewArticle(articleTypeDer, "every", "jed", withNoun()),
-	NewArticle(articleTypeDer, "that", "jen", withNoun()),
 	NewArticle(articleTypeDer, "some", "einig", withNoun()),
 	NewArticle(articleTypeDer, "few", "wenig", withNoun()),
 	NewArticle(articleTypeDer, "many a, some", "manch", withNoun()),
 	NewArticle(articleTypeDer, "diverse", "verschieden", withNoun()),
+
 	NewArticle(articleTypeDer, "such [a]", "solch", withNoun()),
+	NewArticle(articleTypeDer, "which", "welch", withNoun()),
+	NewArticle(articleTypeDer, "this", "dies", withNoun()),
+	NewArticle(articleTypeDer, "every", "jed", withNoun()),
+	NewArticle(articleTypeDer, "that", "jen", withNoun()),
 	// Possessive without noun after (e.g. "mine")
+	// no genitive
 	NewArticle(articleTypeDer, "mine", "mein"),
 	NewArticle(articleTypeDer, "yours (singular)", "dein"),
 	NewArticle(articleTypeDer, "his", "sein"),
@@ -183,13 +174,6 @@ var articles = []Article{
 	NewArticle(articleTypeDer, "yours (plural)", "eur"),
 	NewArticle(articleTypeDer, "theirs", "ihr"),
 	NewArticle(articleTypeDer, "yours (formal)", "Ihr"),
-}
-
-var endings = [][]ending{
-	{{strong: "er", weak: "e"} /*      */, {strong: "e", weak: "e"}, {strong: "es", weak: "e" /*       */}, {strong: "e", weak: "n"}},
-	{{strong: "en", weak: "n"} /*      */, {strong: "e", weak: "e"}, {strong: "es", weak: "e" /*       */}, {strong: "e", weak: "n"}},
-	{{strong: "em", weak: "n"} /*      */, {strong: "er", weak: "n"}, {strong: "em", weak: "n" /*      */}, {strong: "en", weak: "n", noun: "n"}},
-	{{strong: "es", weak: "n", noun: "s"}, {strong: "er", weak: "n"}, {strong: "es", weak: "n", noun: "s"}, {strong: "er", weak: "n"}},
 }
 
 func readResponse(prompt string, lower bool) string {
@@ -204,14 +188,16 @@ func readResponse(prompt string, lower bool) string {
 
 func Practice() bool {
 	articleIndex := rand.Int() % len(articles)
-	article := articles[articleIndex]
 	genderIndex := rand.Int() % len(genders)
 	caseIndex := rand.Int() % len(cases)
+	fmt.Printf("articleIndex: %d, genderIndex: %d; caseIndex: %d\n", articleIndex, genderIndex, caseIndex)
+	article := articles[articleIndex]
 	gender := genders[genderIndex]
 	articleCase := cases[caseIndex][1]
 	expected := article.Compile(Gender(genderIndex), Case(caseIndex))
 	prompt := fmt.Sprintf(`"%s" for %s %s: `, article.GetName(), articleCase, gender)
 	res := readResponse(prompt, false)
+	fmt.Printf("%q == %q\n", res, expected)
 	if res == expected {
 		fmt.Printf("%sCorrect!%s\n", format.Green, format.Reset)
 		return true
